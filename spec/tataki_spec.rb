@@ -21,4 +21,8 @@ describe Tataki do
       ])
     end
   end
+
+  describe "String.to_kana" do
+    it { expect("robottotaisennf".to_kana).to eq("ろぼっとたいせんえふ") }
+  end
 end

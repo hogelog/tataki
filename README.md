@@ -18,7 +18,15 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require "tataki"
+
+"robotto".to_kana # => "ろぼっと"
+"robottotaisennf".to_kana # => "ろぼっとたいせんえふ"
+```
+
+## TODO
+- Add skk-jisho converter
 
 ## Contributing
 
