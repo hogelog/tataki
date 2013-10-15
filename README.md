@@ -1,6 +1,6 @@
 # Tataki
 
-TODO: Write a gem description
+Tataki is pure ruby kana converter.
 
 ## Installation
 
@@ -26,7 +26,7 @@ require "tataki"
 ```
 
 ## TODO
-- Add skk-jisho converter
+- Add skk-jisyo converter
 
 ## Contributing
 
