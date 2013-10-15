@@ -21,21 +21,4 @@ describe Tataki do
       ])
     end
   end
-
-  describe ".to_kana" do
-
-    #context "converts kanji to kana" do
-    #  include_examples "converts_to_kana", "kanji", "かんじ"
-    #end
-
-    #context "" do
-    #  it "" do
-    #  end
-    #end
-
-    #context "" do
-    #  it "" do
-    #  end
-    #end
-  end
 end

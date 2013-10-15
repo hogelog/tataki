@@ -1,4 +1,3 @@
-require "trie"
 require "yaml"
 
 module Tataki
