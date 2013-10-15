@@ -51,7 +51,7 @@ module Tataki
 
         if next_set.size > 0
           return _to_kana(next_sentence, kana + next_set.values.first, "", @trie)
-        elsif next_sentence.start_with?(next_ch)
+        elsif @consonant.include?(next_ch) && next_sentence.start_with?(next_ch)
           return _to_kana(next_sentence, kana + SOKUON, "", @trie)
         elsif through_alphabet
           return _to_kana(next_sentence, kana + prefix + next_ch, "", @trie)

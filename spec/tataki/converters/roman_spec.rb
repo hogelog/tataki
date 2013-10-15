@@ -22,5 +22,8 @@ describe Tataki::Converter::Roman do
     include_examples "converts_kana", "kukkingu", "くっきんぐ"
     include_examples "converts_kana", "kukkingu papa", "くっきんぐ ぱぱ"
     include_examples "converts_kana", "toukyoutokkyokyokakyoku", "とうきょうとっきょきょかきょく"
+
+    include_examples "converts_kana", "kku", "っく"
+    include_examples "converts_kana", ",,", ",,"
   end
 end
