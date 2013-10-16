@@ -14,4 +14,6 @@ module Tataki
       end
     end
   end
+
+  Tataki::CONVERTERS << Converter::Combine
 end

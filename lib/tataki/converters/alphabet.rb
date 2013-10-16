@@ -18,4 +18,6 @@ module Tataki
       end
     end
   end
+
+  Tataki::CONVERTERS << Converter::Alphabet
 end

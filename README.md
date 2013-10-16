@@ -18,11 +18,23 @@ Or install it yourself as:
 
 ## Usage
 
+### Basic usage
 ```ruby
 require "tataki"
 
 "robotto".to_kana # => "ろぼっと"
 "robottotaisennf".to_kana # => "ろぼっとたいせんえふ"
+```
+
+### Configure converter
+```ruby
+require "tataki/base"
+
+alphabet_converter = Tataki::Converter::Alphabet.new
+alphabet_converter.to_kana("abcde") # => "えーびーしーでぃーいー"
+
+combine_converter = Tataki::Converter::Combine.new(Tataki::Converter::Roman.new, Tataki::Converter::Alphabet.new)
+combine_converter.to_kana("robottotaisennf") # => "ろぼっとたいせんえふ"
 ```
 
 ## TODO
