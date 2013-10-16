@@ -1,3 +1,4 @@
+# coding: utf-8
 require "skk/jisyo"
 require "tataki/version"
 require "tataki/converters"

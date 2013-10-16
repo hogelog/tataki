@@ -1,3 +1,4 @@
+# coding: utf-8
 require "spec_helper"
 
 describe Tataki do
@@ -7,7 +8,6 @@ describe Tataki do
 
   describe ".converters" do
     it "returns converters" do
-      p Tataki.converters
       expect(Tataki.converters).to match_array([
         Tataki::Converter::Roman,
         Tataki::Converter::Alphabet,
