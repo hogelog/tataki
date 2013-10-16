@@ -12,6 +12,7 @@ describe Tataki do
         Tataki::Converter::Roman,
         Tataki::Converter::Alphabet,
         Tataki::Converter::Combine,
+        Tataki::Converter::SkkJisyo,
       ])
     end
   end
