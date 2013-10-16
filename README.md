@@ -22,9 +22,12 @@ Or install it yourself as:
 ```ruby
 require "tataki"
 
-"robotto".to_kana # => "ろぼっと"
-"robottotaisennf".to_kana # => "ろぼっとたいせんえふ"
+"漢字をひらがなに変換".to_kana # => "かんじをひらがなにへんかん"
+"X線研究者".to_kana # => "えっくすせんけんきゅうしゃ"
+"肉を食べるだけの簡単なお仕事".to_kana # => "にくをたべるだけのかんたんなおしごと"
 ```
+
+At first time, `require "tataki"` is slow (creating dictionary cache).
 
 ### Configure converter
 ```ruby
@@ -33,12 +36,15 @@ require "tataki/base"
 alphabet_converter = Tataki::Converter::Alphabet.new
 alphabet_converter.to_kana("abcde") # => "えーびーしーでぃーいー"
 
-combine_converter = Tataki::Converter::Combine.new(Tataki::Converter::Roman.new, Tataki::Converter::Alphabet.new)
-combine_converter.to_kana("robottotaisennf") # => "ろぼっとたいせんえふ"
+roman_alphabet_converter = Tataki::Converter::Combine.new(Tataki::Converter::Roman.new, Tataki::Converter::Alphabet.new)
+roman_alphabet_converter.to_kana("robottotaisennf") # => "ろぼっとたいせんえふ"
+
+skk_converter = Tataki::Converter::SkkJisyo.new
+skk_converter.to_kana("研究者") # => "けんきゅうしゃ"
 ```
 
 ## TODO
-- Add skk-jisyo converter
+- Support more configurable
 
 ## Contributing
 

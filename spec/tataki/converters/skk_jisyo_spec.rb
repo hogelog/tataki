@@ -12,6 +12,11 @@ describe Tataki::Converter::SkkJisyo do
     end
 
     include_examples "converts_kana", "", ""
-    #include_examples "converts_kana", "漢字", "かんじ"
+    include_examples "converts_kana", "漢字", "かんじ"
+    include_examples "converts_kana", "漢字変換する", "かんじへんかんする"
+    include_examples "converts_kana", "隣りの", "となりの"
+    include_examples "converts_kana", "隣りはよく柿食う", "となりはよくかきくう"
+    include_examples "converts_kana", "安心安全", "あんしんあんぜん"
+    include_examples "converts_kana", "毎朝新聞配達をしています", "まいあさしんぶんはいたつをしています"
   end
 end

@@ -19,7 +19,7 @@ describe Tataki do
 
   describe "String.to_kana" do
     it "converts to kana" do
-      expect("robottotaisennf".to_kana).to eq("ろぼっとたいせんえふ")
+      expect("X線研究者".to_kana).to eq("えっくすせんけんきゅうしゃ")
     end
   end
 end

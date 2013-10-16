@@ -3,7 +3,7 @@ require "tataki/base"
 
 module Tataki
   EASY_CONVERTER = Tataki::Converter::Combine.new(
-      Tataki::Converter::Roman.new,
+      Tataki::Converter::SkkJisyo.new,
       Tataki::Converter::Alphabet.new,
   ).freeze
 
