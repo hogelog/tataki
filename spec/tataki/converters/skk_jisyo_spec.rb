@@ -29,5 +29,14 @@ describe Tataki::Converter::SkkJisyo do
       include_examples "converts_kana", "漢字", "漢字"
       include_examples "converts_kana", "半澤直樹", "はんざわなおき"
     end
+
+    context "with M, jinmei jisyo" do
+      let(:converter) { Tataki::Converter::SkkJisyo.new(%w[M jinmei]) }
+
+      include_examples "converts_kana", "", ""
+      include_examples "converts_kana", "漢字", "かんじ"
+      include_examples "converts_kana", "半澤直樹", "はんざわなおき"
+      include_examples "converts_kana", "半澤直樹倍返し", "はんざわなおきばいかえし"
+    end
   end
 end
