@@ -40,7 +40,7 @@ skk_converter = Tataki::Converter::SkkJisyo.new
 skk_converter.to_kana("研究者") # => "けんきゅうしゃ"
 
 alphabet_skk_converter = Tataki::Converter::Combine.new(Tataki::Converter::Alphabet.new, Tataki::Converter::SkkJisyo.new)
-alphabet_skk_converter.to_kana("X線研究者") # => "robottotaisennf"
+alphabet_skk_converter.to_kana("X線研究者") # => "えっくすせんけんきゅうしゃ"
 
 ```
 
