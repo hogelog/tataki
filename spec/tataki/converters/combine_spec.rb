@@ -3,7 +3,6 @@ require "spec_helper"
 
 describe Tataki::Converter::Combine do
   let(:skk_converter) { Tataki::Converter::SkkJisyo.new }
-  let(:roman_converter) { Tataki::Converter::Roman.new }
   let(:alphabet_converter) { Tataki::Converter::Alphabet.new }
 
   describe ".to_kana" do
@@ -11,14 +10,6 @@ describe Tataki::Converter::Combine do
       it "converts #{sentence.inspect} to #{kana.inspect}" do
         expect(converter.to_kana(sentence)).to eq(kana)
       end
-    end
-
-    context "when roman + alphabet" do
-      let(:converter) do
-        Tataki::Converter::Combine.new(roman_converter, alphabet_converter)
-      end
-
-      include_examples "converts_kana", "robottotaisennf", "ろぼっとたいせんえふ"
     end
 
     context "when skk-jisyo + alphabet" do

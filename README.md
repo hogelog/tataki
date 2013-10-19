@@ -36,11 +36,12 @@ require "tataki/base"
 alphabet_converter = Tataki::Converter::Alphabet.new
 alphabet_converter.to_kana("abcde") # => "えーびーしーでぃーいー"
 
-roman_alphabet_converter = Tataki::Converter::Combine.new(Tataki::Converter::Roman.new, Tataki::Converter::Alphabet.new)
-roman_alphabet_converter.to_kana("robottotaisennf") # => "ろぼっとたいせんえふ"
-
 skk_converter = Tataki::Converter::SkkJisyo.new
 skk_converter.to_kana("研究者") # => "けんきゅうしゃ"
+
+alphabet_skk_converter = Tataki::Converter::Combine.new(Tataki::Converter::Alphabet.new, Tataki::Converter::SkkJisyo.new)
+alphabet_skk_converter.to_kana("X線研究者") # => "robottotaisennf"
+
 ```
 
 ## TODO

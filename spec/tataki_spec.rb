@@ -9,7 +9,6 @@ describe Tataki do
   describe ".converters" do
     it "returns converters" do
       expect(Tataki.converters).to match_array([
-        Tataki::Converter::Roman,
         Tataki::Converter::Alphabet,
         Tataki::Converter::Combine,
         Tataki::Converter::SkkJisyo,
