@@ -7,30 +7,30 @@ require "trie"
 module Tataki
   module Converter
     class SkkJisyo < Base
+      DEFAULT_CONFIG_PATH = "../../../../data/skk-jisyo.yml"
       DEFAULT_JISYO_SUFFIXES = %w[M]
 
-      def initialize(options = {})
-        options = {
-          :jisyo_paths => DEFAULT_JISYO_SUFFIXES.map{|suffix| Skk::Jisyo.path(suffix) },
-          :trie_cache_path => trie_cache_path(DEFAULT_JISYO_SUFFIXES.join("_")),
-        }.merge(options)
-        config_file = File.expand_path("../../../../data/skk-jisyo.yml", __FILE__)
+      def initialize(jisyo_types = DEFAULT_JISYO_SUFFIXES)
+        @jisyo_paths = jisyo_types.map{|suffix| Skk::Jisyo.path(suffix) }
+        @trie_cache_path = trie_cache_path(jisyo_types.join("_"))
+
+        config_file = File.expand_path(DEFAULT_CONFIG_PATH, __FILE__)
         config_data = YAML.load_file(config_file)
         @roman_data = config_data["roman_table"]
         @ignore_kana = config_data["ignore_kana"]
-        @trie = setup_jisyo(options).freeze
+        @trie = setup_jisyo.freeze
       end
 
-      def setup_jisyo(options)
-        if File.exist?(options[:trie_cache_path])
-          trie = Marshal.load(File.read(options[:trie_cache_path]))
+      def setup_jisyo
+        if File.exist?(@trie_cache_path)
+          trie = Marshal.load(File.read(@trie_cache_path))
         else
           trie = Trie.new
-          options[:jisyo_paths].each do |jisyo_path|
+          @jisyo_paths.each do |jisyo_path|
             add_jisyo(trie, jisyo_path)
           end
-          File.binwrite(options[:trie_cache_path], Marshal.dump(trie))
-          File.write("#{options[:trie_cache_path]}.timestamp", Time.now.to_s)
+          File.binwrite(@trie_cache_path, Marshal.dump(trie))
+          File.write("#{@trie_cache_path}.timestamp", Time.now.to_s)
         end
         trie
       end
