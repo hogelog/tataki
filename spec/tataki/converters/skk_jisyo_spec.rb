@@ -2,7 +2,6 @@
 require "spec_helper"
 
 describe Tataki::Converter::SkkJisyo do
-
   describe ".to_kana" do
     shared_examples "converts_kana" do |sentence, kana|
       it "converts #{sentence.inspect} to #{kana.inspect}" do
@@ -37,6 +36,7 @@ describe Tataki::Converter::SkkJisyo do
       include_examples "converts_kana", "漢字", "かんじ"
       include_examples "converts_kana", "半澤直樹", "はんざわなおき"
       include_examples "converts_kana", "半澤直樹倍返し", "はんざわなおきばいかえし"
+      include_examples "converts_kana", "半澤直樹、銀行を買う", "はんざわなおき、ぎんこうをかう"
     end
   end
 end

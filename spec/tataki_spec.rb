@@ -18,6 +18,8 @@ describe Tataki do
   end
 
   describe "String.to_kana" do
+    before { require "tataki" }
+
     it "converts to kana" do
       expect("X線研究者".to_kana).to eq("えっくすせんけんきゅうしゃ")
     end

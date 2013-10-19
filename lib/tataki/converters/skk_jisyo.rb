@@ -2,7 +2,6 @@
 require "yaml"
 require "time"
 require "skk/jisyo"
-require "trie"
 
 module Tataki
   module Converter
@@ -12,30 +11,34 @@ module Tataki
 
       def initialize(jisyo_types = DEFAULT_JISYO_SUFFIXES)
         @jisyo_paths = jisyo_types.map{|suffix| Skk::Jisyo.path(suffix) }
-        @trie_cache_path = trie_cache_path(jisyo_types.join("_"))
+        @table_cache_path = table_cache_path(jisyo_types.join("_"))
 
         config_file = File.expand_path(DEFAULT_CONFIG_PATH, __FILE__)
         config_data = YAML.load_file(config_file)
         @roman_data = config_data["roman_table"]
         @ignore_kana = config_data["ignore_kana"]
-        @trie = setup_jisyo.freeze
+        tables = setup_jisyo
+        @match_table = tables[0].freeze
+        @okurigana_table = tables[1].freeze
       end
 
       def setup_jisyo
-        if File.exist?(@trie_cache_path)
-          trie = Marshal.load(File.read(@trie_cache_path))
+        if File.exist?(@table_cache_path)
+          tables = Marshal.load(File.read(@table_cache_path))
         else
-          trie = Trie.new
+          match_table = {}
+          okurigana_table = {}
           @jisyo_paths.each do |jisyo_path|
-            add_jisyo(trie, jisyo_path)
+            add_jisyo(match_table, okurigana_table, jisyo_path)
           end
-          File.binwrite(@trie_cache_path, Marshal.dump(trie))
-          File.write("#{@trie_cache_path}.timestamp", Time.now.to_s)
+          tables = [match_table, okurigana_table]
+          File.binwrite(@table_cache_path, Marshal.dump(tables))
+          File.write("#{@table_cache_path}.timestamp", Time.now.to_s)
         end
-        trie
+        tables
       end
 
-      def add_jisyo(trie, jisyo_path)
+      def add_jisyo(match_table, okurigana_table, jisyo_path)
         File.open(jisyo_path, "rb:euc-jp") do |jisyo_file|
           jisyo_file.each_line do |line|
             next if line.empty? || line[0] == ";" || line.include?("#")
@@ -44,8 +47,14 @@ module Tataki
             kana.gsub!(/[^ぁ-んa-z]/, "")
             next if kana.empty? || !(kana =~ /^[ぁ-ん]+[a-z]?/) || @ignore_kana.include?(kana)
             kanji_part.gsub!(/^\/|;.+|\/$/, "")
+
+            table = kana =~ /^(.+)([a-z])$/ ? okurigana_table : match_table
             kanji_part.split("/").each do |kanji|
-              trie.insert(kanji, kana)
+              kanji_prefix = kanji[0]
+              table_entry = table[kanji_prefix]
+              table[kanji_prefix] = table_entry = [] unless table_entry
+              table_entry.push($2 ? [kanji, $1, $2] : [kanji, kana])
+              table_entry.sort_by!{|entry| - (entry[0].size) }
             end
           end
         end
@@ -55,8 +64,8 @@ module Tataki
         File.expand_path("../../../../data/jisyo", __FILE__)
       end
 
-      def trie_cache_path(name)
-        File.join(jisyo_path, "SKK-JISYO.#{name}.trie.cache")
+      def table_cache_path(name)
+        File.join(jisyo_path, "SKK-JISYO.#{name}.table.cache")
       end
 
       def jisyo_timestamp(path)
@@ -64,61 +73,49 @@ module Tataki
       end
 
       def to_kana(sentence)
-        _to_kana(sentence, "", "", @trie)
+        _to_kana(sentence, "")
       end
 
       private
 
-      def _to_kana(sentence, kana, prefix, trie, through_alphabet = true)
-        return if trie.empty?
+      def _to_kana(sentence, kana)
         return kana if sentence.empty?
 
-        next_ch = sentence[0]
-        next_sentence = sentence[1..-1]
-        next_trie = trie.find_prefix(next_ch)
-        next_trie_values = next_trie.values
-        next_trie_values.reject!{|value| value =~ /[a-z]/ }
-        next_set = next_trie.find([])
-        next_set_values = next_set.values
-        okurigana = find_okurigana(next_set_values, next_sentence)
-        next_set_values.reject!{|value| value =~ /[a-z]/ }
-        if okurigana
-          return _to_kana(next_sentence, kana + okurigana, "", @trie)
-        elsif next_set_values.size > 0 && next_set_values.size == next_trie_values.size
-          return _to_kana(next_sentence, kana + next_set_values.sample, "", @trie)
+        table_entry = find_okurigana_entry(sentence) || find_match_entry(sentence)
+        if table_entry
+          next_kanji = table_entry[0]
+          next_kana = table_entry[1]
+          next_sentence = sentence[next_kanji.size .. -1]
+          return _to_kana(next_sentence, kana + next_kana)
         end
 
-        if next_sentence.empty?
-          if next_set_values.size > 0
-            return kana + next_set_values.sample
-          elsif through_alphabet
-            return kana + prefix + next_ch
-          end
-        end
-
-        next_kana = _to_kana(next_sentence, kana, prefix + next_ch, next_trie, false)
-
-        if next_kana
-          return next_kana
-        end
-
-        if next_set_values.size > 0
-          return _to_kana(next_sentence, kana + next_set_values.sample, "", @trie)
-        elsif through_alphabet
-          return _to_kana(next_sentence, kana + prefix + next_ch, "", @trie)
-        else
-          return nil
-        end
+        return _to_kana(sentence[1 .. -1], kana + sentence[0])
       end
 
-      def find_okurigana(yomi_candidates, next_sentence)
-        yomi_candidates.each do |yomi|
-          next unless yomi =~ /.+([a-z])$/
-          okurigana_yomi = @roman_data[$1]
-          next unless okurigana_yomi
-          okurigana_yomi.each do |okurigana|
-            return yomi.gsub(/[a-z]$/, "") if next_sentence.start_with?(okurigana)
+      def find_okurigana_entry(sentence)
+        entries = @okurigana_table[sentence[0]]
+        return unless entries
+
+        entries.each do |entry|
+          kanji, yomi, alphabet = *entry
+          next unless sentence.start_with?(kanji)
+          next_ch = sentence[kanji.size]
+          okurigana_candidates = @roman_data[alphabet]
+          next unless okurigana_candidates
+          okurigana_candidates.each do |okurigana|
+            return entry if okurigana == next_ch
           end
+        end
+        nil
+      end
+
+      def find_match_entry(sentence)
+        entries = @match_table[sentence[0]]
+        return unless entries
+
+        entries.each do |entry|
+          kanji, yomi = *entry
+          return entry if sentence.start_with?(kanji)
         end
         nil
       end
